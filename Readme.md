@@ -1,6 +1,5 @@
 ## A simple cmdline tool to backup your github repos
-### by DQ
-<br>
+by DQ
 
 ### App Info
 - written in python3 (native)
