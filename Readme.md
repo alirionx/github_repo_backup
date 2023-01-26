@@ -16,7 +16,7 @@ $ pip install -r requirements.txt
 $ python ./src/runner.py
 $ ls ./data
 ```
-
+or
 ```
 $ docker run --rm \
   -e GITHUB_USERNAME=YOURUSER \
