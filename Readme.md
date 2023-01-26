@@ -8,7 +8,7 @@ by DQ
 
 ### How to use
 - local installation of python (min 3.9) is required<br>
-or you can use the docker image / Dickerfile
+or you can use the docker image / Dockerfile
 - set your github creds and paras in config.py<br>
 or use envs (GITHUB_USERNAME, GITHUB_API_TOKEN aso.)
 ``` 
