@@ -1,7 +1,5 @@
 from tool import RepoGetter
 
-
-
 #-----------------------------
 if __name__ == "__main__":
   myRepoGetter = RepoGetter()
