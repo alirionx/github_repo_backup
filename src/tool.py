@@ -12,27 +12,44 @@ class RepoGetter():
   def __init__(self):
     os.makedirs(myConfig.backup_target_path, exist_ok=True)
 
-    self.api_repos_url = self.api_base_url + "/users/%s/repos" %myConfig.github_username
+    # self.api_repos_url = self.api_base_url + "/users/%s/repos" %myConfig.github_username
+    
+    # !!!repos of user detect by token!!!
+    self.api_repos_url = self.api_base_url + "/user/repos" 
+    
     self.headers = {
       "X-GitHub-Api-Version": myConfig.github_api_version,
-      "Authorization": myConfig.github_api_token
+      "Authorization": "Bearer %s" %myConfig.github_api_token
     }
     self.repos = []
   
   #----------------------------
   def get_repos_list(self):
-    try:
-      req = requests.get(
-        url=self.api_repos_url,
-        headers=self.headers 
-      )
-      req.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-      raise SystemExit(err)
-    
-    #----------------
-    res = req.json()
-    self.repos = res
+    loop = True
+    i = 0
+    while loop:
+      #---------
+      i+=1
+      try:
+        req = requests.get(
+          url= "%s?page=%s" %(self.api_repos_url, i),
+          headers=self.headers 
+        )
+        req.raise_for_status()
+      except requests.exceptions.HTTPError as err:
+        loop = False
+        raise SystemExit(err)
+      #---------
+      res = req.json()
+      if not len(res):
+        loop = False
+        continue
+      #---------
+      for item in res:
+        try: owner =  item["owner"]["login"]
+        except: continue
+        if owner.lower() == myConfig.github_username.lower():
+          self.repos.append(item)
   
   #----------------------------
   def download_repo_archive(self, url:str, filename:str=None):
