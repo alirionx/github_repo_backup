@@ -15,3 +15,12 @@ or use envs (GITHUB_USERNAME, GITHUB_API_TOKEN aso.)
 $ pip install -r requirements.txt
 $ python ./src/runner.py
 $ ls ./data
+```
+
+```
+$ docker run --rm \
+  -e GITHUB_USERNAME=YOURUSER \
+  -e GITHUB_API_TOKEN=YOURTOKEN \
+  -e PYTHONUNBUFFERED=1 \
+  -v $PWD:/app/data \
+  githubrepobackup:latest
