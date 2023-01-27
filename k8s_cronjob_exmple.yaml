@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: github-automation
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghcr-creds
+  namespace: github-automation
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: >-
+    ewoVERYSECRET
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gh-api-token
+  namespace: github-automation
+type: Opaque
+data:
+  token: VERYBASESECRET
+  # /bin/bash -c 'echo -n "VERYSECRET" | base64'
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: github-repo-backup
+  namespace: github-automation
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          # NFS Volume Example
+          - name: repo-backup-nfs
+            nfs:
+              server: YOURNASSERVERIP
+              path: /PATHTOFOLDER
+          imagePullSecrets:
+          - name: ghcr-creds
+          containers:
+          - name: github-repo-backup
+            image: ghcr.io/alirionx/github_repo_backup:latest
+            volumeMounts:
+            - name: repo-backup-nfs
+              mountPath: /app/data
+            env:
+            - name: GITHUB_USERNAME
+              value: alirionx
+            - name: GITHUB_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gh-api-token
+                  key: token
+          restartPolicy: OnFailure
